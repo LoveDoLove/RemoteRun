@@ -59,6 +59,100 @@ process' are not supported on Windows XP.
 
 
 
+SysExec - Lightweight NT AUTHORITY\SYSTEM Command Executor
+==========================================================
+
+SysExec is a compact C++ command-line tool included in this package that
+lets you run any command as NT AUTHORITY\SYSTEM — both on the local
+machine and on remote computers — with live output streaming back to
+your console.  It is inspired by PsExec and the remote-service mechanism
+already used internally by AdvancedRun.
+
+
+How SysExec obtains SYSTEM privileges
+--------------------------------------
+
+1. SysExec installs a short-lived Windows service (named SysExecSvc)
+   that points back to the SysExec.exe binary itself.
+2. The execution parameters (command, working directory, named-pipe
+   address) are written to a temporary registry key under the service's
+   Parameters sub-key.
+3. The service starts under the LocalSystem (NT AUTHORITY\SYSTEM) account
+   and connects to a named pipe created by the main SysExec process.
+4. The service launches the requested command with its stdout and stderr
+   redirected to the named pipe; the main process streams this output to
+   the console in real time.
+5. Once the command finishes the service exits, is unregistered, and all
+   temporary registry keys are cleaned up automatically.
+
+For remote execution SysExec additionally:
+- Copies itself to the target machine's admin$ share.
+- Creates the service on the remote machine via the remote SCM.
+- Stores parameters in the remote machine's registry via RegConnectRegistry.
+- After completion the remote copy of SysExec.exe is deleted.
+
+
+SysExec Usage
+-------------
+
+  SysExec /system <command> [arguments]
+      Run the command as NT AUTHORITY\SYSTEM on the local machine.
+
+  SysExec /computer <host> <command> [arguments]
+      Run the command as NT AUTHORITY\SYSTEM on a remote machine.
+      <host> may be a hostname or IP address (leading \\ is optional).
+
+  SysExec /dir <path> ...
+      Set the working directory for the launched process.
+
+  SysExec /?
+      Show the full help text.
+
+
+SysExec Examples
+----------------
+
+  SysExec /system cmd.exe
+      Open a SYSTEM command prompt on the local machine.
+
+  SysExec /system whoami
+      Print the current user (will show "nt authority\system").
+
+  SysExec /system /dir C:\Windows regedit.exe
+      Launch regedit as SYSTEM in the C:\Windows directory.
+
+  SysExec /computer 192.168.1.10 ipconfig /all
+      Run ipconfig on a remote machine and stream the output locally.
+
+  SysExec /computer SERVER01 /dir C:\Temp cmd.exe
+      Open a SYSTEM cmd window in C:\Temp on SERVER01.
+
+
+SysExec Requirements
+--------------------
+
+  * Administrator privileges on the local machine.
+  * For remote execution: SMB admin-share (admin$) access and RPC
+    connectivity to the target machine.
+  * Windows Vista / Server 2008 or later (32-bit and 64-bit).
+
+
+Building SysExec from Source
+-----------------------------
+
+The source code is located in src/SysExec/SysExec.cpp.
+
+With CMake (recommended):
+  cmake -S src/SysExec -B build/SysExec -G "Visual Studio 17 2022" -A x64
+  cmake --build build/SysExec --config Release
+
+With MSVC directly (from a VS Developer Command Prompt):
+  cl /nologo /W4 /WX /O2 /MT /EHsc /D_UNICODE /DUNICODE ^
+     src\SysExec\SysExec.cpp advapi32.lib ^
+     /link /SUBSYSTEM:CONSOLE /OUT:SysExec.exe
+
+
+
 Versions History
 ================
 

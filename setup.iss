@@ -1,5 +1,5 @@
-; Inno Setup Script for AdvancedRun v1.51
-; This script packages AdvancedRun.exe and its associated configuration/help files.
+; Inno Setup Script for AdvancedRun v1.51 + SysExec v1.0
+; This script packages AdvancedRun.exe, SysExec.exe and associated files.
 
 [Setup]
 ; Basic Application Information
@@ -33,6 +33,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 ; The main executable
 Source: "AdvancedRun.exe"; DestDir: "{app}"; Flags: ignoreversion
+; SysExec - lightweight NT AUTHORITY\SYSTEM / remote command executor
+Source: "SysExec.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; Help file
 Source: "AdvancedRun.chm"; DestDir: "{app}"; Flags: ignoreversion
 ; Command script
@@ -45,6 +47,8 @@ Source: "readme.txt"; DestDir: "{app}"; Flags: ignoreversion isreadme
 [Icons]
 ; Main Application Shortcut
 Name: "{group}\AdvancedRun"; Filename: "{app}\AdvancedRun.exe"
+; SysExec shortcut
+Name: "{group}\SysExec (SYSTEM Executor)"; Filename: "{app}\SysExec.exe"; Parameters: "/?"; Comment: "Lightweight NT AUTHORITY\SYSTEM command executor"
 ; Searchable Command Shortcut (This allows it to appear in Windows Search)
 Name: "{group}\AdvancedRun System Command"; Filename: "{app}\AdvancedRunSysCmd.cmd"; IconFilename: "{app}\AdvancedRun.exe"
 ; Help and Uninstall
