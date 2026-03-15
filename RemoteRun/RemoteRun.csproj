@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <AssemblyName>RemoteRun</AssemblyName>
+    <RootNamespace>RemoteRun</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Description>Lightweight remote command tool - run programs as NT AUTHORITY\SYSTEM locally or on remote machines</Description>
+    <Copyright>Copyright (c) 2024 LoveDoLove</Copyright>
+    <!-- To publish as a single self-contained exe, use: dotnet publish -r win-x64 with PublishSingleFile=true and SelfContained=true -->
+  </PropertyGroup>
+
+</Project>

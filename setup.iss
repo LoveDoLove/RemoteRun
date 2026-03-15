@@ -37,6 +37,8 @@ Source: "AdvancedRun.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AdvancedRun.chm"; DestDir: "{app}"; Flags: ignoreversion
 ; Command script
 Source: "AdvancedRunSysCmd.cmd"; DestDir: "{app}"; Flags: ignoreversion
+; RemoteRun - C# command tool for NT AUTHORITY\SYSTEM
+Source: "RemoteRun\bin\Release\net8.0-windows\RemoteRun.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: FileExists(ExpandConstant('{src}\RemoteRun\bin\Release\net8.0-windows\RemoteRun.exe'))
 ; Configuration files
 Source: "SYSTEM.cfg"; DestDir: "{app}"; Flags: ignoreversion
 ; Documentation
@@ -47,6 +49,8 @@ Source: "readme.txt"; DestDir: "{app}"; Flags: ignoreversion isreadme
 Name: "{group}\AdvancedRun"; Filename: "{app}\AdvancedRun.exe"
 ; Searchable Command Shortcut (This allows it to appear in Windows Search)
 Name: "{group}\AdvancedRun System Command"; Filename: "{app}\AdvancedRunSysCmd.cmd"; IconFilename: "{app}\AdvancedRun.exe"
+; RemoteRun shortcut
+Name: "{group}\RemoteRun (SYSTEM command tool)"; Filename: "{app}\RemoteRun.exe"; Check: FileExists(ExpandConstant('{app}\RemoteRun.exe'))
 ; Help and Uninstall
 Name: "{group}\AdvancedRun Help"; Filename: "{app}\AdvancedRun.chm"
 Name: "{group}\{cm:UninstallProgram,AdvancedRun}"; Filename: "{uninstallexe}"
