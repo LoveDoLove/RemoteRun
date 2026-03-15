@@ -48,7 +48,7 @@ jobs:
         run: dotnet clean RemoteRun/RemoteRun.csproj
 
       - name: Publish library
-        run: dotnet publish RemoteRun/RemoteRun.csproj --configuration Release --runtime ${{ matrix.runtime }} --self-contained false /p:UseAppHost=false -o ./publish/${{ matrix.os }}-${{ matrix.arch }}/RemoteRun
+        run: dotnet publish RemoteRun/RemoteRun.csproj --configuration Release --runtime ${{ matrix.runtime }} --self-contained true -o ./publish/${{ matrix.os }}-${{ matrix.arch }}/RemoteRun
 
       - name: Zip ${{ matrix.os }}-${{ matrix.arch }} output
         run: |
