@@ -56,6 +56,20 @@ jobs:
           path: ./RemoteRun-${{ inputs.release_version }}-${{ matrix.os }}-${{ matrix.arch }}.zip
           overwrite: true
 
+      - name: Compile Inno Setup installer (${{ matrix.arch }})
+        if: matrix.os == 'windows-latest'
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DMyAppArch=${{ matrix.arch }}" setup.iss
+        shell: pwsh
+
+      - name: Upload ${{ matrix.arch }} installer artifact
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: RemoteRun-${{ inputs.release_version }}-installer-${{ matrix.arch }}.exe
+          path: ./Output/RemoteRun_Setup_${{ matrix.arch }}.exe
+          overwrite: true
+
   release:
     runs-on: ubuntu-latest
     needs: build
@@ -73,6 +87,8 @@ jobs:
           tag_name: ${{ github.event.inputs.release_version }}
           name: ${{ github.event.inputs.release_version }}
           prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
-          files: ./release-assets/**/*.zip
+          files: |
+            ./release-assets/**/*.zip
+            ./release-assets/**/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
