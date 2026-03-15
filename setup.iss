@@ -1,15 +1,24 @@
 ; Inno Setup Script for RemoteRun v1.0
 ; Run programs as NT AUTHORITY\SYSTEM locally or on remote machines.
 ;
-; Build RemoteRun first:
-;   dotnet build -c Release RemoteRun\RemoteRun.csproj
-; Then compile this script with Inno Setup Compiler.
+; Build RemoteRun first (for each architecture):
+;   dotnet publish RemoteRun\RemoteRun.csproj -c Release -r win-x64 --self-contained true -o .\publish\windows-latest-x64\RemoteRun
+;   dotnet publish RemoteRun\RemoteRun.csproj -c Release -r win-x86 --self-contained true -o .\publish\windows-latest-x86\RemoteRun
+; Then compile this script with Inno Setup Compiler, passing the target architecture:
+;   ISCC.exe /DMyAppArch=x64 setup.iss
+;   ISCC.exe /DMyAppArch=x86 setup.iss
+
+; Default to x64 if not specified on the command line (/DMyAppArch=x86 to override)
+#ifndef MyAppArch
+  #define MyAppArch "x64"
+#endif
 
 #define MyAppName      "RemoteRun"
 #define MyAppVersion   "1.0"
 #define MyAppPublisher "LoveDoLove"
 #define MyAppURL       "https://github.com/LoveDoLove/AdvancedRun-Rework"
 #define MyAppExeName   "RemoteRun.exe"
+#define MyAppSourceDir "publish\windows-latest-" + MyAppArch + "\RemoteRun"
 
 [Setup]
 ; Unique installer identity for RemoteRun
@@ -27,12 +36,15 @@ AllowNoIcons=yes
 PrivilegesRequired=admin
 ; Output Settings
 OutputDir=Output
-OutputBaseFilename=RemoteRun_Setup
+OutputBaseFilename=RemoteRun_Setup_{#MyAppArch}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-; Install to the 64-bit Program Files folder on 64-bit systems
+#if MyAppArch == "x64"
+; x64 installer: restrict to 64-bit systems and install in 64-bit Program Files
+ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
+#endif
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -42,8 +54,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-; RemoteRun main executable (build with: dotnet build -c Release RemoteRun\RemoteRun.csproj)
-Source: "RemoteRun\bin\Release\net8.0-windows\RemoteRun.exe"; DestDir: "{app}"; Flags: ignoreversion
+; RemoteRun main executable - path matches the workflow publish output directory
+Source: "{#MyAppSourceDir}\RemoteRun.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; Documentation
 Source: "RemoteRun\README.md"; DestDir: "{app}"; Flags: ignoreversion isreadme
 ; License
