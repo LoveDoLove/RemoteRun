@@ -15,14 +15,16 @@
  * Platforms   : Windows Vista / Server 2008 and later (32- and 64-bit).
  */
 
-#define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT 0x0600   /* Vista+ for RegDeleteTree */
+/* WIN32_LEAN_AND_MEAN and _WIN32_WINNT are injected by CMake via
+   target_compile_definitions; defining them here again would trigger
+   C4005 (macro redefinition), which /WX promotes to a fatal error. */
 
 #include <windows.h>
 #include <winsvc.h>
 #include <sddl.h>
 #include <strsafe.h>
 #include <stdio.h>
+#include <stdlib.h>   /* _countof */
 
 #pragma comment(lib, "advapi32.lib")
 
