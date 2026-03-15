@@ -106,13 +106,19 @@ internal static class Program
               -h, --help       Show this help
 
             Examples:
-              RemoteRun.exe cmd.exe
-              RemoteRun.exe cmd.exe "/c whoami /all"
+              RemoteRun.exe cmd.exe                              (interactive shell)
+              RemoteRun.exe cmd.exe "/c whoami /all"            (capture output)
               RemoteRun.exe -w "C:\Windows\System32" cmd.exe "/c dir"
               RemoteRun.exe \\192.168.1.100 cmd.exe "/c ipconfig /all"
               RemoteRun.exe \\MYSERVER -t 120 powershell.exe "-Command Get-Process"
 
             Notes:
+              • Interactive vs. captured output is detected automatically.
+                When stdin is a real console (not piped), the child process
+                inherits the terminal so interactive programs like cmd.exe or
+                PowerShell work fully (you can type commands normally).
+                When stdin is redirected/piped, stdout and stderr are captured
+                and forwarded — suitable for scripting and automation.
               • Local execution uses token duplication from an existing SYSTEM
                 process (e.g. winlogon.exe) for maximum speed.
               • Remote execution copies this executable to the target machine's

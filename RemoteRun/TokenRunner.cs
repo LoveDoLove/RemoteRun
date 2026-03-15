@@ -173,80 +173,121 @@ internal static class TokenRunner
     }
 
     /// <summary>
-    /// Create the target process using <paramref name="hToken"/> and optionally
-    /// capture its output.
+    /// Create the target process using <paramref name="hToken"/>.
+    ///
+    /// Interactive mode (stdin AND stdout are real console handles, not redirected):
+    ///   The child process inherits the current console handles so that
+    ///   interactive programs such as cmd.exe or PowerShell work normally.
+    ///   No pipes are created.
+    ///
+    /// Non-interactive mode (stdin or stdout is redirected / piped / scripted):
+    ///   stdout and stderr are captured via anonymous pipes and relayed to
+    ///   the caller's stdout/stderr streams.
     /// </summary>
     private static int LaunchWithToken(IntPtr hToken, Options options)
     {
-        // Build pipes for stdout / stderr so we can relay them to the console.
-        var sa = new NativeApi.SECURITY_ATTRIBUTES
-        {
-            nLength        = Marshal.SizeOf<NativeApi.SECURITY_ATTRIBUTES>(),
-            bInheritHandle = true,
-        };
-
-        if (!NativeApi.CreatePipe(out IntPtr hOutRead, out IntPtr hOutWrite, ref sa, 0))
-            throw new InvalidOperationException($"CreatePipe (stdout) failed: {LastError()}");
-        if (!NativeApi.CreatePipe(out IntPtr hErrRead, out IntPtr hErrWrite, ref sa, 0))
-        {
-            NativeApi.CloseHandle(hOutRead);
-            NativeApi.CloseHandle(hOutWrite);
-            throw new InvalidOperationException($"CreatePipe (stderr) failed: {LastError()}");
-        }
-
-        // The read ends must NOT be inherited by the child process.
-        NativeApi.SetHandleInformation(hOutRead, NativeApi.HANDLE_FLAG_INHERIT, 0);
-        NativeApi.SetHandleInformation(hErrRead, NativeApi.HANDLE_FLAG_INHERIT, 0);
+        // Determine whether we are attached to a real interactive console.
+        // Go interactive only when BOTH stdin and stdout are real console handles
+        // (not redirected/piped). If either is redirected, use the pipe-capture
+        // path so that output is properly forwarded to the caller's stream.
+        bool interactive = !Console.IsInputRedirected && !Console.IsOutputRedirected;
 
         string cmdLine = BuildCommandLine(options.Program, options.Arguments);
 
+        // Pipe handles – only used in non-interactive mode.
+        IntPtr hOutRead  = IntPtr.Zero;
+        IntPtr hOutWrite = IntPtr.Zero;
+        IntPtr hErrRead  = IntPtr.Zero;
+        IntPtr hErrWrite = IntPtr.Zero;
+
         var si = new NativeApi.STARTUPINFO
         {
-            cb         = Marshal.SizeOf<NativeApi.STARTUPINFO>(),
-            dwFlags    = NativeApi.STARTF_USESTDHANDLES | NativeApi.STARTF_USESHOWWINDOW,
-            wShowWindow = NativeApi.SW_HIDE,
-            hStdInput  = IntPtr.Zero,
-            hStdOutput = hOutWrite,
-            hStdError  = hErrWrite,
+            cb = Marshal.SizeOf<NativeApi.STARTUPINFO>(),
         };
+        uint creationFlags = NativeApi.NORMAL_PRIORITY_CLASS;
+
+        if (interactive)
+        {
+            // Interactive: do NOT set STARTF_USESTDHANDLES.
+            // CreateProcessWithTokenW will inherit the parent's console
+            // stdin/stdout/stderr automatically, giving the child full
+            // interactive access to the terminal.
+        }
+        else
+        {
+            // Non-interactive: capture stdout and stderr via anonymous pipes.
+            var sa = new NativeApi.SECURITY_ATTRIBUTES
+            {
+                nLength        = Marshal.SizeOf<NativeApi.SECURITY_ATTRIBUTES>(),
+                bInheritHandle = true,
+            };
+
+            if (!NativeApi.CreatePipe(out hOutRead, out hOutWrite, ref sa, 0))
+                throw new InvalidOperationException($"CreatePipe (stdout) failed: {LastError()}");
+
+            if (!NativeApi.CreatePipe(out hErrRead, out hErrWrite, ref sa, 0))
+            {
+                NativeApi.CloseHandle(hOutRead);
+                NativeApi.CloseHandle(hOutWrite);
+                throw new InvalidOperationException($"CreatePipe (stderr) failed: {LastError()}");
+            }
+
+            // Read ends must NOT be inherited by the child.
+            NativeApi.SetHandleInformation(hOutRead, NativeApi.HANDLE_FLAG_INHERIT, 0);
+            NativeApi.SetHandleInformation(hErrRead, NativeApi.HANDLE_FLAG_INHERIT, 0);
+
+            si.dwFlags     = NativeApi.STARTF_USESTDHANDLES | NativeApi.STARTF_USESHOWWINDOW;
+            si.wShowWindow = NativeApi.SW_HIDE;
+            si.hStdInput   = IntPtr.Zero;
+            si.hStdOutput  = hOutWrite;
+            si.hStdError   = hErrWrite;
+            creationFlags |= NativeApi.CREATE_NO_WINDOW;
+        }
 
         bool ok = NativeApi.CreateProcessWithTokenW(
             hToken,
-            0,                                  // dwLogonFlags
-            null,                               // lpApplicationName
+            0,                         // dwLogonFlags
+            null,                      // lpApplicationName
             cmdLine,
-            NativeApi.CREATE_NO_WINDOW | NativeApi.NORMAL_PRIORITY_CLASS,
-            IntPtr.Zero,                        // environment (inherit)
+            creationFlags,
+            IntPtr.Zero,               // environment (inherit)
             options.WorkingDirectory,
             ref si,
             out NativeApi.PROCESS_INFORMATION pi);
 
         // Close write ends in the parent so ReadFile sees EOF when child exits.
-        NativeApi.CloseHandle(hOutWrite);
-        NativeApi.CloseHandle(hErrWrite);
+        if (hOutWrite != IntPtr.Zero) NativeApi.CloseHandle(hOutWrite);
+        if (hErrWrite != IntPtr.Zero) NativeApi.CloseHandle(hErrWrite);
 
         if (!ok)
         {
-            NativeApi.CloseHandle(hOutRead);
-            NativeApi.CloseHandle(hErrRead);
+            if (hOutRead != IntPtr.Zero) NativeApi.CloseHandle(hOutRead);
+            if (hErrRead != IntPtr.Zero) NativeApi.CloseHandle(hErrRead);
             throw new InvalidOperationException($"CreateProcessWithTokenW failed: {LastError()}");
         }
 
         NativeApi.CloseHandle(pi.hThread);
 
-        // Relay output on background threads while we wait.
-        var outThread = new System.Threading.Thread(() => RelayPipe(hOutRead, Console.Out));
-        var errThread = new System.Threading.Thread(() => RelayPipe(hErrRead, Console.Error));
-        outThread.IsBackground = true;
-        errThread.IsBackground = true;
-        outThread.Start();
-        errThread.Start();
+        // In non-interactive mode, relay the captured output on background threads.
+        System.Threading.Thread? outThread = null;
+        System.Threading.Thread? errThread = null;
+        if (!interactive)
+        {
+            outThread = new System.Threading.Thread(() => RelayPipe(hOutRead, Console.Out));
+            errThread = new System.Threading.Thread(() => RelayPipe(hErrRead, Console.Error));
+            outThread.IsBackground = true;
+            errThread.IsBackground = true;
+            outThread.Start();
+            errThread.Start();
+        }
 
         int exitCode = 0;
         if (!options.NoWait)
         {
+            // Guard against integer overflow: TimeoutSeconds * 1000 must fit in uint.
+            const int maxTimeoutSeconds = (int)(uint.MaxValue / 1000);
             uint waitMs = options.TimeoutSeconds > 0
-                ? (uint)(options.TimeoutSeconds * 1000)
+                ? (uint)(Math.Min(options.TimeoutSeconds, maxTimeoutSeconds) * 1000)
                 : NativeApi.INFINITE;
 
             uint waitResult = NativeApi.WaitForSingleObject(pi.hProcess, waitMs);
@@ -256,8 +297,11 @@ internal static class TokenRunner
             NativeApi.GetExitCodeProcess(pi.hProcess, out uint code);
             exitCode = (int)code;
 
-            outThread.Join(3_000);
-            errThread.Join(3_000);
+            // After the process exits the write end of the pipe is already closed,
+            // so the relay threads will finish as soon as they drain any buffered
+            // data.  Wait without a hard timeout so we never drop trailing output.
+            outThread?.Join();
+            errThread?.Join();
         }
 
         NativeApi.CloseHandle(pi.hProcess);

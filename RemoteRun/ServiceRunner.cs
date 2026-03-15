@@ -144,8 +144,10 @@ internal static class ServiceRunner
                 if (!options.NoWait)
                 {
                     Console.Error.WriteLine("[*] Waiting for service to complete...");
+                    // Guard against integer overflow: TimeoutSeconds * 1000 must fit in uint.
+                    const int maxTimeoutSeconds = (int)(uint.MaxValue / 1000);
                     uint waitMs = options.TimeoutSeconds > 0
-                        ? (uint)(options.TimeoutSeconds * 1000)
+                        ? (uint)(Math.Min(options.TimeoutSeconds, maxTimeoutSeconds) * 1000)
                         : uint.MaxValue;
                     WaitForState(hSvc, NativeApi.SERVICE_STOPPED, timeoutMs: waitMs);
 

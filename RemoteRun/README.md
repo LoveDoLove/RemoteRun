@@ -61,10 +61,10 @@ Options:
 ### Examples
 
 ```bat
-:: Open a SYSTEM command prompt locally
+:: Open an interactive SYSTEM command prompt (you can type commands freely)
 RemoteRun.exe cmd.exe
 
-:: Run whoami /all as SYSTEM and print the result
+:: Run a single command as SYSTEM and capture its output
 RemoteRun.exe cmd.exe "/c whoami /all"
 
 :: Run a command with a specific working directory
@@ -76,6 +76,15 @@ RemoteRun.exe \\192.168.1.100 cmd.exe "/c ipconfig /all"
 :: Run a PowerShell command on a remote server with 2-minute timeout
 RemoteRun.exe \\MYSERVER -t 120 powershell.exe "-Command Get-Process"
 ```
+
+### Interactive vs. captured-output mode
+
+RemoteRun detects the mode automatically:
+
+| Situation | Behaviour |
+|-----------|-----------|
+| Running from a real terminal (stdin is keyboard) | **Interactive** – the child process shares your console; interactive programs like `cmd.exe` or `PowerShell` work fully. You can type commands normally. |
+| stdin is piped / redirected | **Captured** – stdout and stderr are captured via pipes and forwarded to the caller; useful for scripting. |
 
 ---
 
