@@ -74,4 +74,5 @@ Name: "{autodesktop}\RemoteRun"; Filename: "{app}\RemoteRun.exe"; \
 [Run]
 ; After installation the user can immediately open a SYSTEM command prompt.
 Filename: "{app}\RemoteRun.exe"; Parameters: "cmd.exe"; \
-    Description: "Open a SYSTEM command prompt now";
+    Description: "Open a SYSTEM command prompt now"; \
+    Flags: nowait postinstall skipifsilent runasadmin

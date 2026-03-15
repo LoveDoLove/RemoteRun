@@ -50,8 +50,9 @@ internal sealed class Options
     /// </summary>
     public static Options? Parse(string[] args)
     {
+        // No arguments: default to opening an interactive SYSTEM command prompt.
         if (args.Length == 0)
-            return new Options { ShowHelp = true };
+            return new Options { Program = "cmd.exe" };
 
         // Internal service-mode invocation (not for end users)
         if (args[0] == "--service")

@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Security.Principal;
+
 namespace RemoteRun;
 
 /// <summary>
@@ -26,6 +29,12 @@ internal static class Program
             ServiceWorker.Run(args);
             return 0;
         }
+
+        // ── Auto-elevate if not running as Administrator ───────────────────
+        // Re-launch via ShellExecute with the "runas" verb so Windows shows
+        // the UAC prompt, then wait for the elevated copy to finish.
+        if (!IsAdministrator())
+            return Elevate(args);
 
         // ── Parse user-facing arguments ────────────────────────────────────
         Options? options = Options.Parse(args);
@@ -85,6 +94,60 @@ internal static class Program
         return ServiceRunner.RunRemote(options);
     }
 
+    // ── Elevation helpers ──────────────────────────────────────────────────
+
+    /// <summary>Returns true when the current process has Administrator privileges.</summary>
+    private static bool IsAdministrator()
+    {
+        using var identity = WindowsIdentity.GetCurrent();
+        var principal = new WindowsPrincipal(identity);
+        return principal.IsInRole(WindowsBuiltInRole.Administrator);
+    }
+
+    /// <summary>
+    /// Re-launches this executable with the "runas" ShellExecute verb so that
+    /// Windows shows a UAC elevation prompt.  Waits for the elevated process to
+    /// finish and returns its exit code.
+    /// </summary>
+    private static int Elevate(string[] args)
+    {
+        string? exe = Environment.ProcessPath
+            ?? Process.GetCurrentProcess().MainModule?.FileName;
+
+        if (string.IsNullOrEmpty(exe))
+        {
+            Console.Error.WriteLine("[!] Cannot determine the executable path for elevation.");
+            return 1;
+        }
+
+        // Re-join arguments, re-quoting any that contain spaces.
+        string arguments = string.Join(" ", args.Select(
+            a => a.Contains(' ') ? $"\"{a}\"" : a));
+
+        var psi = new ProcessStartInfo
+        {
+            FileName        = exe,
+            Arguments       = arguments,
+            Verb            = "runas",   // triggers UAC elevation prompt
+            UseShellExecute = true,
+        };
+
+        try
+        {
+            using Process? proc = Process.Start(psi);
+            if (proc == null) return 0;
+            proc.WaitForExit();
+            return proc.ExitCode;
+        }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            // The user clicked "No" on the UAC prompt.
+            Console.Error.WriteLine(
+                "[!] Elevation cancelled. Administrator privileges are required.");
+            return 5;
+        }
+    }
+
     // ── Usage ──────────────────────────────────────────────────────────────
 
     private static void PrintUsage()
@@ -106,6 +169,7 @@ internal static class Program
               -h, --help       Show this help
 
             Examples:
+              RemoteRun.exe                                        (open SYSTEM cmd.exe)
               RemoteRun.exe cmd.exe                              (interactive shell)
               RemoteRun.exe cmd.exe "/c whoami /all"            (capture output)
               RemoteRun.exe -w "C:\Windows\System32" cmd.exe "/c dir"
@@ -113,6 +177,10 @@ internal static class Program
               RemoteRun.exe \\MYSERVER -t 120 powershell.exe "-Command Get-Process"
 
             Notes:
+              • Running with no arguments opens an interactive NT AUTHORITY\SYSTEM
+                command prompt (cmd.exe). Administrator privileges are required.
+              • If not running as Administrator, a UAC elevation prompt is shown
+                automatically so no manual "Run as Administrator" is needed.
               • Interactive vs. captured output is detected automatically.
                 When stdin is a real console (not piped), the child process
                 inherits the terminal so interactive programs like cmd.exe or

@@ -37,7 +37,7 @@ service binary (dual-mode via `--service` internal flag).
 ## Requirements
 
 - Windows Vista / Server 2008 or later (local and remote).
-- **Administrator** privileges on the local machine.
+- **Administrator** privileges on the local machine (requested automatically via UAC if needed).
 - For remote execution: full Administrator rights on the target machine
   and the `admin$` share must be accessible.
 - .NET 8 runtime **or** publish as a self-contained single-file exe
@@ -48,7 +48,7 @@ service binary (dual-mode via `--service` internal flag).
 ## Usage
 
 ```
-RemoteRun.exe [options] program [arguments]
+RemoteRun.exe [options] [program [arguments]]
 RemoteRun.exe [options] \\computer program [arguments]
 
 Options:
@@ -58,10 +58,18 @@ Options:
   -h, --help       Show help
 ```
 
+> **No arguments needed for a SYSTEM shell.**  Running `RemoteRun.exe` with
+> no arguments immediately opens an interactive `cmd.exe` as
+> `NT AUTHORITY\SYSTEM`.  If you are not yet running as Administrator,
+> Windows will show a UAC elevation prompt automatically.
+
 ### Examples
 
 ```bat
-:: Open an interactive SYSTEM command prompt (you can type commands freely)
+:: Open an interactive SYSTEM command prompt (default, no arguments required)
+RemoteRun.exe
+
+:: Explicit: open an interactive SYSTEM command prompt
 RemoteRun.exe cmd.exe
 
 :: Run a single command as SYSTEM and capture its output
@@ -123,8 +131,9 @@ The self-contained output is placed in
 
 ## Security notes
 
-- RemoteRun requires you to **already be an Administrator**; it does not
-  bypass UAC or perform any unauthorized privilege escalation.
+- If the process is not yet elevated, RemoteRun shows a standard Windows UAC
+  prompt and re-launches itself with Administrator rights.  No credentials are
+  stored or transmitted.
 - Admin → SYSTEM elevation is the same mechanism used by Windows itself
   (e.g., Task Scheduler, PsExec, AdvancedRun).
 - Temporary files written to disk contain the plain-text command and its
