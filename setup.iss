@@ -54,8 +54,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-; RemoteRun main executable - path matches the workflow publish output directory
-Source: "{#MyAppSourceDir}\RemoteRun.exe"; DestDir: "{app}"; Flags: ignoreversion
+; All published files (exe, DLLs, runtime libraries, etc.) from the dotnet publish output directory
+Source: "{#MyAppSourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Documentation
 Source: "RemoteRun\README.md"; DestDir: "{app}"; Flags: ignoreversion isreadme
 ; License
