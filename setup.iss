@@ -40,6 +40,7 @@ OutputBaseFilename=RemoteRun_Setup_{#MyAppArch}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=images\logo.ico
 #if MyAppArch == "x64"
 ; x64 installer: restrict to 64-bit systems and install in 64-bit Program Files
 ArchitecturesAllowed=x64
