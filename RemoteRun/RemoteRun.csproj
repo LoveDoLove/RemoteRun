@@ -8,11 +8,43 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.5</AssemblyVersion>
+    <FileVersion>1.0.5</FileVersion>
     <Description>Lightweight remote command tool - run programs as NT AUTHORITY\SYSTEM locally or on remote machines</Description>
-    <Copyright>Copyright (c) 2024 LoveDoLove</Copyright>
+    <Copyright>Copyright (c) 2026 LoveDoLove</Copyright>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Version>1.0.5</Version>
+    <Authors>LoveDoLove</Authors>
+    <Company>LoveDoLove</Company>
+    <PackageProjectUrl>https://github.com/LoveDoLove/AdvancedRun-Rework</PackageProjectUrl>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/LoveDoLove/AdvancedRun-Rework</RepositoryUrl>
     <!-- To publish as a single self-contained exe, use: dotnet publish -r win-x64 with PublishSingleFile=true and SelfContained=true -->
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
