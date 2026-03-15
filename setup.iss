@@ -54,7 +54,6 @@ Source: "LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Main RemoteRun shortcut
 Name: "{group}\RemoteRun"; Filename: "{app}\RemoteRun.exe"; \
-    Flags: runasadmin; \
     Comment: "Run programs as NT AUTHORITY\SYSTEM"
 
 ; "System CMD" – appears in Windows Search / Start Menu search.
@@ -62,7 +61,6 @@ Name: "{group}\RemoteRun"; Filename: "{app}\RemoteRun.exe"; \
 ; command prompt without having to open an admin terminal manually.
 Name: "{group}\System CMD"; Filename: "{app}\RemoteRun.exe"; \
     Parameters: "cmd.exe"; \
-    Flags: runasadmin; \
     Comment: "Open an interactive NT AUTHORITY\SYSTEM command prompt"
 
 ; Uninstall shortcut
@@ -70,7 +68,7 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 
 ; ── Desktop (optional task) ───────────────────────────────────────────────
 Name: "{autodesktop}\RemoteRun"; Filename: "{app}\RemoteRun.exe"; \
-    Flags: runasadmin; Tasks: desktopicon; \
+    Tasks: desktopicon; \
     Comment: "Run programs as NT AUTHORITY\SYSTEM"
 
 [Run]
