@@ -12,7 +12,7 @@
     <FileVersion>1.0.5</FileVersion>
     <Description>Lightweight remote command tool - run programs as NT AUTHORITY\SYSTEM locally or on remote machines</Description>
     <Copyright>Copyright (c) 2026 LoveDoLove</Copyright>
-    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationIcon>..\images\logo.ico</ApplicationIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <Version>1.0.5</Version>
@@ -26,7 +26,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="logo.ico" />
+    <Content Include="..\images\logo.ico">
+      <Link>logo.ico</Link>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -41,9 +43,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="logo.png">
+    <None Include="..\images\logo.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+      <Link>logo.png</Link>
     </None>
   </ItemGroup>
 
