@@ -10,7 +10,7 @@
 
 <br />
 <div align="center">
-  <a href="https://github.com/LoveDoLove/AdvancedRun-Rework">
+  <a href="https://github.com/LoveDoLove/RemoteRun">
     <img src="images/logo.png" alt="Windows" width="80" height="80">
   </a>
 
@@ -19,14 +19,14 @@
   <p align="center">
     Lightweight .NET 8 Windows utility to run programs as <b>NT AUTHORITY\\SYSTEM</b> locally or remotely.
     <br />
-    <a href="https://github.com/LoveDoLove/AdvancedRun-Rework/tree/main/RemoteRun"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/LoveDoLove/RemoteRun/tree/main/RemoteRun"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/LoveDoLove/AdvancedRun-Rework">View Project</a>
+    <a href="https://github.com/LoveDoLove/RemoteRun">View Project</a>
     &middot;
-    <a href="https://github.com/LoveDoLove/AdvancedRun-Rework/issues/new?labels=bug">Report Bug</a>
+    <a href="https://github.com/LoveDoLove/RemoteRun/issues/new?labels=bug">Report Bug</a>
     &middot;
-    <a href="https://github.com/LoveDoLove/AdvancedRun-Rework/issues/new?labels=enhancement">Request Feature</a>
+    <a href="https://github.com/LoveDoLove/RemoteRun/issues/new?labels=enhancement">Request Feature</a>
   </p>
 </div>
 
@@ -89,7 +89,7 @@ Follow these steps to build and run the project locally.
 
 1. Clone the repository
    ```sh
-   git clone https://github.com/LoveDoLove/AdvancedRun-Rework.git
+   git clone https://github.com/LoveDoLove/RemoteRun.git
    ```
 2. Build the project
    ```sh
@@ -143,7 +143,7 @@ See the [module README](./RemoteRun/README.md) for deeper technical behavior.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-See the [open issues](https://github.com/LoveDoLove/AdvancedRun-Rework/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/LoveDoLove/RemoteRun/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -161,8 +161,8 @@ Contributions are welcome and appreciated.
 
 ### Top contributors:
 
-<a href="https://github.com/LoveDoLove/AdvancedRun-Rework/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=LoveDoLove/AdvancedRun-Rework" alt="contrib.rocks image" />
+<a href="https://github.com/LoveDoLove/RemoteRun/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=LoveDoLove/RemoteRun" alt="contrib.rocks image" />
 </a>
 
 ## License
@@ -179,7 +179,7 @@ LoveDoLove
 - Discord: https://discord.com/invite/FyYEmtRCRE
 - Telegram Channel: https://t.me/lovedoloveofficialchannel
 
-Project Link: [https://github.com/LoveDoLove/AdvancedRun-Rework](https://github.com/LoveDoLove/AdvancedRun-Rework)
+Project Link: [https://github.com/LoveDoLove/RemoteRun](https://github.com/LoveDoLove/RemoteRun)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -193,16 +193,16 @@ Project Link: [https://github.com/LoveDoLove/AdvancedRun-Rework](https://github.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/LoveDoLove/AdvancedRun-Rework.svg?style=for-the-badge
-[contributors-url]: https://github.com/LoveDoLove/AdvancedRun-Rework/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/LoveDoLove/AdvancedRun-Rework.svg?style=for-the-badge
-[forks-url]: https://github.com/LoveDoLove/AdvancedRun-Rework/network/members
-[stars-shield]: https://img.shields.io/github/stars/LoveDoLove/AdvancedRun-Rework.svg?style=for-the-badge
-[stars-url]: https://github.com/LoveDoLove/AdvancedRun-Rework/stargazers
-[issues-shield]: https://img.shields.io/github/issues/LoveDoLove/AdvancedRun-Rework.svg?style=for-the-badge
-[issues-url]: https://github.com/LoveDoLove/AdvancedRun-Rework/issues
-[license-shield]: https://img.shields.io/github/license/LoveDoLove/AdvancedRun-Rework.svg?style=for-the-badge
-[license-url]: https://github.com/LoveDoLove/AdvancedRun-Rework/blob/main/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/LoveDoLove/RemoteRun.svg?style=for-the-badge
+[contributors-url]: https://github.com/LoveDoLove/RemoteRun/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/LoveDoLove/RemoteRun.svg?style=for-the-badge
+[forks-url]: https://github.com/LoveDoLove/RemoteRun/network/members
+[stars-shield]: https://img.shields.io/github/stars/LoveDoLove/RemoteRun.svg?style=for-the-badge
+[stars-url]: https://github.com/LoveDoLove/RemoteRun/stargazers
+[issues-shield]: https://img.shields.io/github/issues/LoveDoLove/RemoteRun.svg?style=for-the-badge
+[issues-url]: https://github.com/LoveDoLove/RemoteRun/issues
+[license-shield]: https://img.shields.io/github/license/LoveDoLove/RemoteRun.svg?style=for-the-badge
+[license-url]: https://github.com/LoveDoLove/RemoteRun/blob/main/LICENSE
 [dotnet-shield]: https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white
 [dotnet-url]: https://dotnet.microsoft.com/
 [csharp-shield]: https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=csharp&logoColor=white
