@@ -37,16 +37,24 @@ if(MSVC)
     target_compile_options(SysExec PRIVATE
         /W4         # High warning level
         /WX         # Warnings as errors
-        /O2         # Full optimization for speed
-        /Oi         # Enable intrinsic functions
-        /GL         # Whole-program optimization
-        /MT$<$<CONFIG:Debug>:d>  # Static CRT (no runtime DLL dependency)
+
+        # Static CRT: /MT for Release, /MTd for Debug
+        $<$<CONFIG:Debug>:/MTd>
+        $<$<NOT:$<CONFIG:Debug>>:/MT>
+
+        # Optimization flags – only for non-Debug configs.
+        # In Debug, CMake already injects /Od /RTC1 which conflict with /O2.
+        $<$<NOT:$<CONFIG:Debug>>:/O2>   # Full optimization
+        $<$<NOT:$<CONFIG:Debug>>:/Oi>   # Enable intrinsic functions
+        $<$<NOT:$<CONFIG:Debug>>:/GL>   # Whole-program optimization
     )
 
     target_link_options(SysExec PRIVATE
         /SUBSYSTEM:CONSOLE
-        /LTCG                  # Link-time code generation (matches /GL)
         /MANIFEST:NO           # No side-by-side manifest needed
+
+        # /LTCG requires /GL; restrict to the same non-Debug configs
+        $<$<NOT:$<CONFIG:Debug>>:/LTCG>
     )
 endif()
 
