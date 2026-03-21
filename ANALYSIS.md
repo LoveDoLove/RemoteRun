@@ -14,7 +14,7 @@
 | Name | RemoteRun |
 | Language | C# (.NET 8.0-windows), InnoSetup (ISS) |
 | Framework | `net8.0-windows` — Windows-only, uses Win32 P/Invoke |
-| Version | 1.0 (`AssemblyVersion 1.0.0.0`, `FileVersion 1.0.0.0`) |
+| Version | 1.0.7 (`AssemblyVersion 1.0.7`, `FileVersion 1.0.7`) |
 | Author / Publisher | LoveDoLove |
 | Repository | https://github.com/LoveDoLove/AdvancedRun-Rework |
 | Solution file | `RemoteRun.slnx` |

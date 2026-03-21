@@ -154,7 +154,7 @@ internal static class Program
     {
         Console.WriteLine(
             """
-            RemoteRun v1.0 - Lightweight remote command tool
+            RemoteRun v1.0.7 - Lightweight remote command tool
             Run programs as NT AUTHORITY\SYSTEM locally or on remote machines.
             Requires Administrator privileges.
 

@@ -1,4 +1,4 @@
-; Inno Setup Script for RemoteRun v1.0
+; Inno Setup Script for RemoteRun v1.0.7
 ; Run programs as NT AUTHORITY\SYSTEM locally or on remote machines.
 ;
 ; Build RemoteRun first (for each architecture):
@@ -14,7 +14,7 @@
 #endif
 
 #define MyAppName      "RemoteRun"
-#define MyAppVersion   "1.0"
+#define MyAppVersion   "1.0.7"
 #define MyAppPublisher "LoveDoLove"
 #define MyAppURL       "https://github.com/LoveDoLove/AdvancedRun-Rework"
 #define MyAppExeName   "RemoteRun.exe"
@@ -34,6 +34,8 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 ; RemoteRun requires Administrator; reflect that in the installer too
 PrivilegesRequired=admin
+; We modify PATH so that "remoterun" can be run from any console
+ChangesEnvironment=yes
 ; Output Settings
 OutputDir=Output
 OutputBaseFilename=RemoteRun_Setup_{#MyAppArch}
@@ -83,6 +85,12 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\RemoteRun"; Filename: "{app}\RemoteRun.exe"; \
     Tasks: desktopicon; \
     Comment: "Run programs as NT AUTHORITY\SYSTEM"
+
+[Registry]
+; Add installation directory to the system PATH so "remoterun" works everywhere
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; \
+    ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; \
+    Flags: preservestringtype
 
 [Run]
 ; After installation the user can immediately open a SYSTEM command prompt.
